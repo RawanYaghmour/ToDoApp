@@ -1,46 +1,95 @@
 ﻿@model List<TaskItem>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css">
     <title>To-Do List</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container mt-5">
-        <h1>To-Do List</h1>
-        <form method="post" asp-action="AddTask">
-            <div class="input-group mb-3">
-                <input type="text" name="title" class="form-control" placeholder="New task" required />
-                <button class="btn btn-primary" type="submit">Add</button>
+        <h1 class="text-center mb-4">To-Do List</h1>
+
+        <!-- Task Input Form -->
+        <form method="post" asp-action="AddTask" id="taskForm" class="mb-4">
+            <div class="input-group">
+                <input type="text" id="taskTitle" name="title" class="form-control" placeholder="New task" required />
+                <button class="btn btn-primary" type="submit">Add Task</button>
             </div>
+            <span id="error" class="text-danger d-block mt-2" style="display: none;">Task title is required!</span>
         </form>
 
-        <h2>Pending Tasks</h2>
-        <ul class="list-group">
-            @foreach (var task in Model.Where(t => !t.IsCompleted))
-            {
-                <li class="list-group-item">
-                    <form method="post" asp-action="MarkAsCompleted" class="d-inline">
-                        <input type="hidden" name="id" value="@task.Id" />
-                        <button class="btn btn-sm btn-success">✔</button>
-                    </form>
-                    @task.Title
-                    <form method="post" asp-action="DeleteTask" class="d-inline float-end">
-                        <input type="hidden" name="id" value="@task.Id" />
-                        <button class="btn btn-sm btn-danger">✖</button>
-                    </form>
-                </li>
-            }
-        </ul>
+        <div class="row">
+            <!-- Pending Tasks -->
+            <div class="col-md-6">
+                <h3>Pending Tasks</h3>
+                <ul class="list-group">
+                    @foreach (var task in Model.Where(t => !t.IsCompleted))
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <form method="post" asp-action="MarkAsCompleted" class="d-inline">
+                                    <input type="hidden" name="id" value="@task.Id" />
+                                    <button class="btn btn-sm btn-success me-2">✔</button>
+                                </form>
+                                @task.Title
+                            </span>
+                            <div>
+                                <!-- Edit Button -->
+                                <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#editTaskModal-@task.Id">✎ Edit</button>
 
-        <h2 class="mt-4">Completed Tasks</h2>
-        <ul class="list-group">
-            @foreach (var task in Model.Where(t => t.IsCompleted))
-            {
-                <li class="list-group-item">@task.Title</li>
-            }
-        </ul>
+                                <!-- Delete Button -->
+                                <form method="post" asp-action="DeleteTask" class="d-inline">
+                                    <input type="hidden" name="id" value="@task.Id" />
+                                    <button class="btn btn-sm btn-danger">✖</button>
+                                </form>
+                            </div>
+                        </li>
+
+                        <!-- Edit Task Modal -->
+                        <div class="modal fade" id="editTaskModal-@task.Id" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editTaskModalLabel">Edit Task</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="post" asp-action="EditTask">
+                                            <input type="hidden" name="id" value="@task.Id" />
+                                            <div class="mb-3">
+                                                <label for="taskTitle-@task.Id" class="form-label">Task Title</label>
+                                                <input type="text" id="taskTitle-@task.Id" name="title" class="form-control" value="@task.Title" required />
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </ul>
+            </div>
+
+            <!-- Completed Tasks -->
+            <div class="col-md-6">
+                <h3>Completed Tasks</h3>
+                <ul class="list-group">
+                    @foreach (var task in Model.Where(t => t.IsCompleted))
+                    {
+                        <li class="list-group-item completed">
+                            @task.Title
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
