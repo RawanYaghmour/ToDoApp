@@ -41,5 +41,16 @@ namespace ToDoApp.Controllers
             _taskService.DeleteTask(id);
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public IActionResult EditTask(int id, string title)
+        {
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                _taskService.UpdateTask(id, title);
+            }
+            return RedirectToAction("Index");
+        }
+
     }
 }

@@ -27,5 +27,15 @@ namespace ToDoApp.Services
             var task = _tasks.FirstOrDefault(t => t.Id == id);
             if (task != null) _tasks.Remove(task);
         }
+
+        public void UpdateTask(int id, string newTitle)
+        {
+            var task = _tasks.FirstOrDefault(t => t.Id == id);
+            if (task != null && !string.IsNullOrWhiteSpace(newTitle))
+            {
+                task.Title = newTitle;
+            }
+        }
+
     }
 }
